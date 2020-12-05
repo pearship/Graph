@@ -1,5 +1,6 @@
 package graph;
 
+import java.util.Collections;
 import java.util.PriorityQueue;
 import java.util.Vector;
 
@@ -8,9 +9,9 @@ import java.util.Vector;
  * @author PEARSHIP
  *
  */
-public class RoutingAlgorithm {
+public class ShortestPathAlgorithm {
 
-	private RoutingAlgorithm() {
+	private ShortestPathAlgorithm() {
 	}
 
 	/**
@@ -111,12 +112,13 @@ public class RoutingAlgorithm {
 		Vector<Graph> B = new Vector<Graph>();
 		// Run dijkstra algorithm for the first shortest route.
 		Graph g_copy = g.copy();
-		A.add(RoutingAlgorithm.dijkstra(g_copy, src, dst));
+		A.add(ShortestPathAlgorithm.dijkstra(g_copy, src, dst));
 		// Run dijkstra algorithm
 		if (knum > 1) {
 			for (int k = 1; k < knum; k++) {
 				Graph a = A.get(k - 1);
 				for (int i = 0; i < a.getNumberOfEdges(); i++) {
+					//=========================== Needs correction ===========================//
 					Graph g_buffer = g.copy();
 					Graph root_path = a.getPart(0, i);
 					String spur_vertex_id = a.getVertex(i).getId();
@@ -130,33 +132,19 @@ public class RoutingAlgorithm {
 							}
 						}
 					}
-					Graph spur_path = RoutingAlgorithm.dijkstra(g_buffer, spur_vertex_id, dst);
+					//=========================== Needs correction ===========================//
+					Graph spur_path = ShortestPathAlgorithm.dijkstra(g_buffer, spur_vertex_id, dst);
 					if (spur_path.getNumberOfEdges() > 1) {
 						B.add(root_path.connect(spur_path));
 					}
 				}
-				double max_cost = Double.MAX_VALUE;
-				int index = -1;
-				for (int bidx = 0; bidx < B.size(); bidx++) {
-					double cost = B.get(bidx).getVertices().lastElement().getWeightedValue();
-					boolean unique = true;
-					for (int aidx = 0; aidx < A.size(); aidx++) {
-						if (A.get(aidx).equals(B.get(bidx))) {
-							unique = false;
-							break;
-						}
-					}
-					if (unique && max_cost > cost) {
-						index = bidx;
-						max_cost = cost;
-					}
-				}
-				if (index > -1) {
-					A.add(B.get(index));
-				} else {
+				if (B.isEmpty()) {
 					break;
+				} else {
+					Collections.sort(B);
+					A.add(B.firstElement());
+					B.clear();
 				}
-				B.clear();
 			}
 		}
 		return A;

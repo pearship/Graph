@@ -3,7 +3,7 @@ import java.util.Vector;
 import graph.Graph;
 import graph.Edge;
 import graph.Vertex;
-import graph.RoutingAlgorithm;
+import graph.ShortestPathAlgorithm;
 
 public class Main {
 
@@ -63,12 +63,11 @@ public class Main {
 		g.addEdge(l8);
 		g.addEdge(l9);
 
-		Graph p = RoutingAlgorithm.dijkstra(g, "1", "5");
+		Graph p = ShortestPathAlgorithm.dijkstra(g, "1", "5");
 		p.dump();
-		Vector<Graph> plist = RoutingAlgorithm.kShortestPaths(g, "1", "5", 4);
+		Vector<Graph> plist = ShortestPathAlgorithm.kShortestPaths(g, "1", "5", 3);
 		for (int i = 0; i < plist.size(); i++) {
-			plist.get(i).dump();
-			
+			plist.get(i).dump();			
 		}
 	}
 

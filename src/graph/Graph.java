@@ -8,25 +8,25 @@ import java.util.Vector;
  * @author PEARSHIP
  *
  */
-public class Graph {
+public class Graph implements Comparable<Graph> {
 
-	private Vector<Vertex> nodes;
-	private Vector<Edge> links;
+	private Vector<Vertex> vertices;
+	private Vector<Edge> edges;
 
 	public Graph() {
-		nodes = new Vector<Vertex>();
-		links = new Vector<Edge>();
+		vertices = new Vector<Vertex>();
+		edges = new Vector<Edge>();
 	}
 
 	public Graph copy() {
 		Graph g = new Graph();
 		Vector<Vertex> v_list = new Vector<Vertex>();
 		Vector<Edge> e_list = new Vector<Edge>();
-		for (int i = 0; i < nodes.size(); i++) {
-			v_list.add(nodes.get(i).copy());
+		for (int i = 0; i < vertices.size(); i++) {
+			v_list.add(vertices.get(i).copy());
 		}
 		g.setVertices(v_list);
-		for (int i = 0; i < links.size(); i++) {
+		for (int i = 0; i < edges.size(); i++) {
 			e_list.add(getEdge(i).copy());
 		}
 		for (int i = 0; i < e_list.size(); i++) {
@@ -71,19 +71,19 @@ public class Graph {
 		if (begin < 0) {
 			begin = 0;
 		}
-		if (end >= nodes.size()) {
-			end = nodes.size() - 1;
+		if (end >= vertices.size()) {
+			end = vertices.size() - 1;
 		}
-		if (begin >= 0 && end < nodes.size()) {
+		if (begin >= 0 && end < vertices.size()) {
 			Graph part = new Graph();
 			int v_idx = begin;
 			int e_idx = begin;
 			while (v_idx <= end) {
-				part.addVertex(nodes.get(v_idx));
+				part.addVertex(vertices.get(v_idx));
 				v_idx++;
 			}
 			while (e_idx <= end - 1) {
-				part.addEdge(links.get(e_idx));
+				part.addEdge(edges.get(e_idx));
 				e_idx++;
 			}
 			return part;
@@ -97,101 +97,111 @@ public class Graph {
 			return false;
 		}
 		Graph g = (Graph) o;
-		if (nodes.size() == g.getNumberOfVertices() && links.size() == g.getNumberOfEdges()) {
+		if (vertices.size() == g.getNumberOfVertices() && edges.size() == g.getNumberOfEdges()) {
 			int v_num = 0;
 			int e_num = 0;
-			for (int i = 0; i < nodes.size(); i++) {
+			for (int i = 0; i < vertices.size(); i++) {
 				for (int j = 0; j < g.getNumberOfVertices(); j++) {
-					if (nodes.get(i).equals(g.getVertex(j))) {
+					if (vertices.get(i).equals(g.getVertex(j))) {
 						v_num++;
 					}
 				}
 			}
-			for (int i = 0; i < links.size(); i++) {
+			for (int i = 0; i < edges.size(); i++) {
 				for (int j = 0; j < g.getNumberOfEdges(); j++) {
-					if (links.get(i).equals(g.getEdge(j))) {
+					if (edges.get(i).equals(g.getEdge(j))) {
 						e_num++;
 					}
 				}
 			}
-			return v_num == nodes.size() && e_num == links.size();
+			return v_num == vertices.size() && e_num == edges.size();
 		} else {
 			return false;
 		}
 	}
+	
+	public int compareTo(Graph g) {
+		if (vertices.lastElement().getWeightedValue() > g.getVertices().lastElement().getWeightedValue()) {
+			return 1;
+		} else if (vertices.lastElement().getWeightedValue() < g.getVertices().lastElement().getWeightedValue()) {
+			return -1;
+		} else {
+			return 0;
+		}
+	}
 
 	public void setVertices(Vector<Vertex> v) {
-		nodes.addAll(v);
+		vertices.addAll(v);
 	}
 
 	public void setEdges(Vector<Edge> e) {
-		links.addAll(e);
+		edges.addAll(e);
 	}
 
 	public void clear() {
-		nodes.clear();
-		links.clear();
+		vertices.clear();
+		edges.clear();
 	}
 
 	public void reverse() {
-		Collections.reverse(nodes);
-		Collections.reverse(links);
+		Collections.reverse(vertices);
+		Collections.reverse(edges);
 	}
 
 	public void addVertex(Vertex n) {
-		nodes.add(n);
+		vertices.add(n);
 	}
 
 	public void addEdge(Edge l) {
-		links.add(l);
+		edges.add(l);
 	}
 
 	public Vector<Vertex> getVertices() {
-		return nodes;
+		return vertices;
 	}
 
 	public Vector<Edge> getEdges() {
-		return links;
+		return edges;
 	}
 
 	public Vertex getVertex(int i) {
-		return nodes.get(i);
+		return vertices.get(i);
 	}
 
 	public Vertex getVertex(String id) {
-		for (int i = 0; i < nodes.size(); i++) {
-			if (nodes.get(i).getId().equals(id)) {
-				return nodes.get(i);
+		for (int i = 0; i < vertices.size(); i++) {
+			if (vertices.get(i).getId().equals(id)) {
+				return vertices.get(i);
 			}
 		}
 		return null;
 	}
 
 	public Edge getEdge(int i) {
-		return links.get(i);
+		return edges.get(i);
 	}
 
 	public Edge getEdge(String id) {
-		for (int i = 0; i < links.size(); i++) {
-			if (links.get(i).getId().equals(id)) {
-				return links.get(i);
+		for (int i = 0; i < edges.size(); i++) {
+			if (edges.get(i).getId().equals(id)) {
+				return edges.get(i);
 			}
 		}
 		return null;
 	}
 
 	public int getNumberOfVertices() {
-		return nodes.size();
+		return vertices.size();
 	}
 
 	public int getNumberOfEdges() {
-		return links.size();
+		return edges.size();
 	}
 
 	public boolean containsVertex(String id) {
 		int i = 0;
 		while (true) {
-			if (i == nodes.size()) {
+			if (i == vertices.size()) {
 				return false;
 			}
 			if (getVertex(i).getId().equals(id)) {
@@ -204,10 +214,10 @@ public class Graph {
 	public boolean containsEdge(String id) {
 		int i = 0;
 		while (true) {
-			if (i == links.size()) {
+			if (i == edges.size()) {
 				return false;
 			}
-			if (links.get(i).getId().equals(id)) {
+			if (edges.get(i).getId().equals(id)) {
 				return true;
 			}
 			i++;
@@ -217,11 +227,11 @@ public class Graph {
 	public void removeVertex(String id) {
 		int i = 0;
 		while (true) {
-			if (i == nodes.size()) {
+			if (i == vertices.size()) {
 				return;
 			}
-			if (nodes.get(i).getId().equals(id)) {
-				nodes.remove(i);
+			if (vertices.get(i).getId().equals(id)) {
+				vertices.remove(i);
 				return;
 			}
 			i++;
@@ -231,11 +241,11 @@ public class Graph {
 	public void removeEdge(String id) {
 		int i = 0;
 		while (true) {
-			if (i == links.size()) {
+			if (i == edges.size()) {
 				return;
 			}
-			if (links.get(i).getId().equals(id)) {
-				links.remove(i);
+			if (edges.get(i).getId().equals(id)) {
+				edges.remove(i);
 				return;
 			}
 			i++;
@@ -247,9 +257,9 @@ public class Graph {
 	 */
 	public void removeEdgesConnectedToVertex(String id) {
 		Vector<String> remove_ids = new Vector<String>();
-		for (int i = 0; i < links.size(); i++) {
-			if (links.get(i).getVertex1().getId().equals(id) || links.get(i).getVertex2().getId().equals(id)) {
-				remove_ids.add(links.get(i).getId());
+		for (int i = 0; i < edges.size(); i++) {
+			if (edges.get(i).getVertex1().getId().equals(id) || edges.get(i).getVertex2().getId().equals(id)) {
+				remove_ids.add(edges.get(i).getId());
 			}
 		}
 		for (int i = 0; i < remove_ids.size(); i++) {
@@ -262,16 +272,16 @@ public class Graph {
 	 */
 	public void dump() {
 		String str = "V = {";
-		for (int i = 0; i < nodes.size(); i++) {
-			str += nodes.get(i).getId();
-			if (i < nodes.size() - 1) {
+		for (int i = 0; i < vertices.size(); i++) {
+			str += vertices.get(i).getId();
+			if (i < vertices.size() - 1) {
 				str += ", ";
 			}
 		}
 		str += "}\nE = {";
-		for (int i = 0; i < links.size(); i++) {
-			str += links.get(i).getId();
-			if (i < links.size() - 1) {
+		for (int i = 0; i < edges.size(); i++) {
+			str += edges.get(i).getId();
+			if (i < edges.size() - 1) {
 				str += ", ";
 			}
 		}
