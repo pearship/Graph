@@ -1,6 +1,5 @@
 package graph;
 
-import java.util.Collections;
 import java.util.PriorityQueue;
 import java.util.Vector;
 
@@ -109,31 +108,34 @@ public class ShortestPathAlgorithm {
 		// Initialize A[knum] and B[] which are the heaps to store the potential k-th
 		// shortest path.
 		Vector<Graph> A = new Vector<Graph>();
-		Vector<Graph> B = new Vector<Graph>();
+		PriorityQueue<Graph> B = new PriorityQueue<Graph>();
 		// Run dijkstra algorithm for the first shortest route.
 		Graph g_copy = g.copy();
 		A.add(ShortestPathAlgorithm.dijkstra(g_copy, src, dst));
-		// Run dijkstra algorithm
 		if (knum > 1) {
 			for (int k = 1; k < knum; k++) {
-				Graph a = A.get(k - 1);
-				for (int i = 0; i < a.getNumberOfEdges(); i++) {
-					//=========================== Needs correction ===========================//
+				for (int i = 0; i < A.get(k - 1).getNumberOfEdges(); i++) {
 					Graph g_buffer = g.copy();
-					Graph root_path = a.getPart(0, i);
-					String spur_vertex_id = a.getVertex(i).getId();
-					String remove_edge_id = a.getEdge(i).getId();
-					g_buffer.removeEdge(remove_edge_id);
-					if (i > 0) {
-						for (int j = 0; j < i; j++) {
-							String remove_vertex_id = root_path.getVertex(j).getId();
-							if (!spur_vertex_id.equals(remove_vertex_id)) {
-								g_buffer.removeEdgesConnectedToVertex(remove_vertex_id);
-							}
+					// Spur node from the k-shortest path
+					Vertex spur_vertex = A.get(k - 1).getVertex(i);
+					// Root path from the k-shortest path
+					Graph root_path = A.get(k - 1).getPart(0, i);
+					for (Graph path : A) {
+						if (root_path.equals(path.getPart(0, i))) {
+							// Remove the links that are part of the previous shortest paths which share the
+							// same root path.
+							g_buffer.removeEdge(path.getEdge(i).getId());
 						}
 					}
-					//=========================== Needs correction ===========================//
-					Graph spur_path = ShortestPathAlgorithm.dijkstra(g_buffer, spur_vertex_id, dst);
+					for (Vertex root_path_vertex : root_path.getVertices()) {
+						if (!root_path_vertex.equals(spur_vertex)) {
+							g_buffer.removeVertex(root_path_vertex.getId());
+							g_buffer.removeEdgesConnectedToVertex(root_path_vertex.getId());
+						}
+					}
+					// Run dijktra from the spur node to the destination.
+					Graph spur_path = ShortestPathAlgorithm.dijkstra(g_buffer, spur_vertex.getId(), dst);
+					// Add the candidate path to the heap.
 					if (spur_path.getNumberOfEdges() > 1) {
 						B.add(root_path.connect(spur_path));
 					}
@@ -141,9 +143,8 @@ public class ShortestPathAlgorithm {
 				if (B.isEmpty()) {
 					break;
 				} else {
-					Collections.sort(B);
-					A.add(B.firstElement());
-					B.clear();
+					// Add the shortest path in the heap to A, and remove from the heap.
+					A.add(B.remove());
 				}
 			}
 		}
