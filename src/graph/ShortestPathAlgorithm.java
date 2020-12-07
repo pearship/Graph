@@ -93,7 +93,7 @@ public class ShortestPathAlgorithm {
 	}
 
 	/**
-	 * Yen's K shortest paths routing algorithm.
+	 * Yen's K-shortest paths routing algorithm.
 	 * 
 	 * @param <Vertex>
 	 * @param <Edge>
